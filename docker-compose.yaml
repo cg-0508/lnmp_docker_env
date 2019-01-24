@@ -1,0 +1,44 @@
+version: "3"
+
+services:
+  nginx:
+    container_name: deploy-nginx
+    image: nginx:1.15-alpine
+    build: ./nginx
+    volumes: 
+      - ./www:/app
+      - ./nginx/conf/conf.d:/etc/nginx/conf.d
+      - ./runtime/logs/nginx:/var/log/nginx
+    ports: 
+      - "80:80"
+      # - "443:443"
+    networks: 
+      - default
+  php7.2:
+    container_name: deploy-php
+    image: php:7.2.7-fpm-alpine3.6
+    build: ./php
+    volumes:
+      - ./www:/app
+    ports:
+      - "9000:9000"
+  redis:
+    container_name: deploy-redis
+    image: redis:4-alpine
+    build: ./redis
+    volumes:
+      - ./runtime/logs/redis:/tmp/logs/redis
+      - ./redis/data:/data
+    ports:
+      - "6379:6379"
+  mysql:
+    container_name: deploy-mysql
+    image: mysql:5.7
+    build: ./mysql
+    environment: 
+      MYSQL_ROOT_PASSWORD: cc9834
+    volumes:
+      - ./runtime/logs/mysql:/tmp/logs/mysql
+    ports:
+      - "3306:3306"
+
